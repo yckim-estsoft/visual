@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Users 이탈 원인 분석 대시보드</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- 사이드바 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="app-icon">
+                <img src="perso.avif" alt="Perso.ai Logo" class="logo-image">
+                <span class="app-name">Perso.ai</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboard</div>
+                <a href="#" class="nav-item active" data-dashboard="churn">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 17V9"/>
+                        <path d="M13 17V5"/>
+                        <path d="M8 17v-3"/>
+                    </svg>
+                    <span>Churn</span>
+                </a>
+            </div>
+        </nav>
+        
+        <div class="sidebar-toggle" id="sidebar-toggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="6" width="18" height="12" rx="2" ry="2"/>
+                <line x1="9" y1="6" x2="9" y2="18"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="main-content">
+
+
+        <!-- 대시보드 콘텐츠 -->
+        <div class="dashboard">
+            
+
+        <!-- Table 뷰 -->
+        <div id="table-view" class="view-content active">
+            <header class="dashboard-header">
+                <h1>Churn Dashboard</h1>
+            </header>
+            
+            <!-- 세그먼트 컨트롤 (Churn 페이지에서만 사용) -->
+            <div id="churn-segment-control" class="segment-control">
+                <button class="segment-btn active" data-view="table">
+                    <svg class="segment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v18H3z"/>
+                        <path d="M3 9h18"/>
+                        <path d="M9 21V9"/>
+                    </svg>
+                    <span>Table</span>
+                </button>
+                <button class="segment-btn" data-view="statistics">
+                    <svg class="segment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                    </svg>
+                    <span>Statistics</span>
+                </button>
+            </div>
+                <!-- 테이블 섹션 -->
+                <section class="table-section">
+
+                
+                <div class="table-container">
+                    <table id="churn-table">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    <div class="header-content">
+                                        <span>사용자 ID</span>
+                                        <button class="filter-btn" data-filter="user_id">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>플랜</span>
+                                        <button class="filter-btn" data-filter="plan">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>생성 영상 수</span>
+                                        <button class="filter-btn" data-filter="generated_videos">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>국가</span>
+                                        <button class="filter-btn" data-filter="country">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>마지막 영상일</span>
+                                        <button class="filter-btn" data-filter="last_video_date">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>이탈일</span>
+                                        <button class="filter-btn" data-filter="churn_date">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>구독 종료일</span>
+                                        <button class="filter-btn" data-filter="subscription_end_date">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>이탈 원인</span>
+                                        <button class="filter-btn" data-filter="payment_status">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- 데이터가 동적으로 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <button id="prev-page">이전</button>
+                    <span id="page-info">1 / 10</span>
+                    <button id="next-page">다음</button>
+                </div>
+            </section>
+            </div>
+
+            <!-- Statistics 뷰 -->
+            <div id="statistics-view" class="view-content">
+                <header class="dashboard-header">
+                    <h1>Churn Dashboard</h1>
+                </header>
+                
+                <!-- 세그먼트 컨트롤 (Statistics 뷰에도 동일하게 추가) -->
+                <div id="churn-segment-control-stats" class="segment-control">
+                    <button class="segment-btn" data-view="table">
+                        <svg class="segment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3h18v18H3z"/>
+                            <path d="M3 9h18"/>
+                            <path d="M9 21V9"/>
+                        </svg>
+                        <span>Table</span>
+                    </button>
+                    <button class="segment-btn active" data-view="statistics">
+                        <svg class="segment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                        </svg>
+                        <span>Statistics</span>
+                    </button>
+                </div>
+                <!-- 기간 필터 섹션 -->
+                <section class="date-filter-section">
+                    <div class="quick-filters">
+                        <button class="quick-filter-btn" data-period="7">Last 7 days</button>
+                        <button class="quick-filter-btn active" data-period="30">Last 1 month</button>
+                        <button class="quick-filter-btn" data-period="180">Last 6 months</button>
+                    </div>
+                    <div class="date-range-filter">
+                        <div class="filter-group">
+                            <label for="start-date">이탈일 시작:</label>
+                            <input type="date" id="start-date">
+                        </div>
+                        <div class="filter-group">
+                            <label for="end-date">이탈일 종료:</label>
+                            <input type="date" id="end-date">
+                        </div>
+
+                        <button class="apply-date-filter-btn">적용</button>
+                    </div>
+                </section>
+
+                <!-- KPI 카드 섹션 -->
+                <section class="kpi-section">
+                    <div class="kpi-card">
+                        <h3>이탈자 수</h3>
+                        <div class="kpi-value" id="total-churn-rate">0</div>
+                        <div class="kpi-change" id="total-churn-change">0%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <h3>플랜별 이탈자 수 (Creator:Team:Enterprise)</h3>
+                        <div class="kpi-value" id="payment-fail-rate">0</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <h3>평균 영상 생성 수</h3>
+                        <div class="kpi-value" id="avg-videos">0</div>
+                        <div class="kpi-change" id="avg-videos-change">0</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <h3>평균 활동 종료~이탈 간격</h3>
+                        <div class="kpi-value" id="avg-churn-gap">0일</div>
+                        <div class="kpi-change" id="avg-churn-gap-change">0일</div>
+                    </div>
+                </section>
+
+                <!-- 국가별 Churn 분석 섹션 -->
+                <section class="ranking-section">
+                    <div class="ranking-container">
+                        <h3>국가별 Churn 분석 (절대 수 + 비율)</h3>
+                        <div id="country-ranking"></div>
+                    </div>
+                </section>
+
+                <!-- 차트 섹션 -->
+                <section class="charts-section">
+                    <div class="chart-container">
+                        <h3>플랜별 이탈원인 Status</h3>
+                        <canvas id="plan-stacked-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>플랜별 평균 영상 생성개수</h3>
+                        <canvas id="plan-avg-videos-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Last Video Date → Churn Date 간격 분석</h3>
+                        <div id="scatter-plot"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- 필터 팝업 -->
+    <div id="filter-popup" class="filter-popup">
+        <div class="filter-popup-content">
+            <div class="filter-popup-header">
+                <h3 id="filter-title">필터</h3>
+                <button class="close-btn" id="close-filter">×</button>
+            </div>
+            <div class="filter-popup-body">
+                <!-- 텍스트 검색 필터 -->
+                <div id="text-filter" class="filter-section" style="display: none;">
+                    <label>검색어 입력:</label>
+                    <input type="text" id="text-filter-input" placeholder="검색어를 입력하세요...">
+                </div>
+                
+                <!-- 범위 필터 -->
+                <div id="range-filter" class="filter-section" style="display: none;">
+                    <label>범위 설정:</label>
+                    <div class="range-inputs">
+                        <input type="number" id="range-min" placeholder="최소값">
+                        <span>-</span>
+                        <input type="number" id="range-max" placeholder="최대값">
+                    </div>
+                </div>
+                
+                <!-- 날짜 범위 필터 -->
+                <div id="date-range-filter" class="filter-section" style="display: none;">
+                    <label>날짜 범위:</label>
+                    <div class="date-inputs">
+                        <input type="date" id="date-min">
+                        <span>-</span>
+                        <input type="date" id="date-max">
+                    </div>
+                </div>
+                
+                <!-- 셀렉트 필터 -->
+                <div id="select-filter" class="filter-section" style="display: none;">
+                    <label>선택:</label>
+                    <select id="select-filter-options">
+                        <option value="">전체</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-popup-footer">
+                <button id="apply-filter-btn" class="apply-btn">적용</button>
+                <button id="clear-filter-btn" class="clear-btn">초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Videos Modal -->
+    <div id="user-videos-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="user-info">
+                    <div class="user-main-info">
+                        <h3 id="modal-user-name">사용자명</h3>
+                        <div class="user-info-simple">
+                            <div class="info-line">
+                                <span class="info-label">플랜:</span>
+                                <span class="info-value" id="modal-user-plan">-</span>
+                            </div>
+                            <div class="info-line">
+                                <span class="info-label">이탈원인:</span>
+                                <span class="info-value" id="modal-user-churn-reason">-</span>
+                            </div>
+                            <div class="info-line">
+                                <span class="info-label">국적:</span>
+                                <span class="info-value" id="modal-user-country">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <button class="close-btn" onclick="hideUserVideosModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="videos-header">
+                    <h4>영상 목록</h4>
+                    <span class="total-videos">총 영상 수: <span id="total-videos-count">0</span>개</span>
+                </div>
+                <div id="videos-list" class="videos-list">
+                    <!-- Videos will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-player-modal" class="modal">
+        <div class="modal-content video-player-content">
+            <div class="modal-header">
+                <div class="video-info">
+                    <h3 id="video-title">영상 제목</h3>
+                    <p id="video-date">생성일: 2024-01-01</p>
+                </div>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 세그먼트 컨트롤 -->
+                <div class="video-segment-control">
+                    <button class="video-segment-btn active" data-video-type="original">원본</button>
+                    <button class="video-segment-btn" data-video-type="dubbed">더빙</button>
+                    <button class="video-segment-btn" data-video-type="lipsync">립싱크</button>
+                </div>
+                
+                <!-- 비디오 플레이어 영역 -->
+                <div class="video-player-container">
+                    <div class="video-player">
+                        <video id="video-player" controls>
+                            <source id="video-source" src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-placeholder" id="video-placeholder">
+                            <div class="play-button">▶</div>
+                            <p>영상을 선택하세요</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 비디오 정보 -->
+                <div class="video-details-info">
+                    <div class="video-detail-item">
+                        <span class="detail-label">상태:</span>
+                        <span class="detail-value" id="video-status">완료</span>
+                    </div>
+                    <div class="video-detail-item">
+                        <span class="detail-label">길이:</span>
+                        <span class="detail-value" id="video-duration">00:59</span>
+                    </div>
+                    <div class="video-dashboard-detail-item">
+                        <span class="detail-label">해상도:</span>
+                        <span class="detail-value" id="video-resolution">1920x1080</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
