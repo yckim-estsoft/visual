@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx http-server . -p 3000 -c-1",
     "dev": "npx http-server . -p 3000 -c-1 -o",
-    "build": "echo 'Build completed'"
+    "build": "if not exist public mkdir public && copy *.html public\\ && copy *.js public\\ && copy *.css public\\ && xcopy fonts public\\fonts\\ /E /I && copy perso.avif public\\"
   },
   "keywords": ["dashboard", "analytics", "churn", "data-visualization"],
   "author": "",
