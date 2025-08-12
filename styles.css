@@ -1329,34 +1329,10 @@ body::after {
     border: 1px solid #e1e5e9;
     border-radius: 16px;
     padding: 24px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
 }
 
-.video-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
 
-.video-item:hover {
-    background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
-    border-color: #667eea;
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
-}
-
-.video-item:hover::before {
-    transform: scaleX(1);
-}
 
 .video-header {
     display: flex;

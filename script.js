@@ -1833,6 +1833,12 @@ const showUserVideosModal = (userId, userName) => {
                          </div>
                      </div>
                  `;
+                 
+                 // 영상 클릭 이벤트 추가
+                 videoItem.addEventListener('click', () => {
+                     showVideoPlayerModal(video, index + 1);
+                 });
+                 
                  videosList.appendChild(videoItem);
              });
     
@@ -1846,6 +1852,80 @@ const hideUserVideosModal = () => {
         modal.classList.remove('show');
     } else {
         console.warn('User videos modal not found when trying to hide');
+    }
+};
+
+// 비디오 플레이어 모달 표시
+const showVideoPlayerModal = (video, videoNumber) => {
+    const modal = document.getElementById('video-player-modal');
+    const videoTitle = document.getElementById('video-title');
+    const videoDate = document.getElementById('video-date');
+    
+    if (!modal || !videoTitle || !videoDate) {
+        console.error('Video player modal elements not found');
+        return;
+    }
+    
+    // 모달 정보 설정
+    videoTitle.textContent = `${videoNumber}번. ${video.title}`;
+    videoDate.textContent = `생성일: ${formatDate(video.date)}`;
+    
+    // 현재 선택된 영상 정보 저장
+    window.currentVideo = video;
+    
+    // 모달 표시
+    modal.classList.add('show');
+    
+    // 기본적으로 원본 영상 표시
+    showVideoByType('original');
+};
+
+// 비디오 플레이어 모달 숨기기
+const hideVideoPlayerModal = () => {
+    const modal = document.getElementById('video-player-modal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+};
+
+// 영상 타입별로 비디오 표시
+const showVideoByType = (videoType) => {
+    const videoPlayer = document.getElementById('video-player');
+    const videoSource = document.getElementById('video-source');
+    const videoPlaceholder = document.getElementById('video-placeholder');
+    const segmentBtns = document.querySelectorAll('.video-segment-btn');
+    
+    if (!videoPlayer || !videoSource || !videoPlaceholder) {
+        console.error('Video player elements not found');
+        return;
+    }
+    
+    // 모든 세그먼트 버튼에서 active 클래스 제거
+    segmentBtns.forEach(btn => btn.classList.remove('active'));
+    
+    // 선택된 타입의 버튼에 active 클래스 추가
+    const selectedBtn = document.querySelector(`[data-video-type="${videoType}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+    
+    // 영상 타입에 따른 더미 비디오 URL 생성 (실제로는 각 영상의 원본/더빙/립싱크 파일 경로를 사용)
+    const videoUrls = {
+        'original': `https://sample-videos.com/zip/10/mp4/SampleVideo_${Math.floor(Math.random() * 10) + 1}_1280x720_1mb.mp4`,
+        'dubbed': `https://sample-videos.com/zip/10/mp4/SampleVideo_${Math.floor(Math.random() * 10) + 1}_1280x720_1mb.mp4`,
+        'lipsync': `https://sample-videos.com/zip/10/mp4/SampleVideo_${Math.floor(Math.random() * 1) + 1}_1280x720_1mb.mp4`
+    };
+    
+    if (videoUrls[videoType]) {
+        videoSource.src = videoUrls[videoType];
+        videoPlayer.style.display = 'block';
+        videoPlaceholder.style.display = 'none';
+        
+        // 비디오 로드 및 재생
+        videoPlayer.load();
+    } else {
+        videoPlayer.style.display = 'none';
+        videoPlaceholder.style.display = 'flex';
     }
 };
 
@@ -1875,6 +1955,41 @@ const setupUserVideosModal = () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             hideUserVideosModal();
+        }
+    });
+};
+
+// 비디오 플레이어 모달 설정
+const setupVideoPlayerModal = () => {
+    // 모달 닫기 버튼 이벤트
+    const closeBtn = document.querySelector('#video-player-modal .close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideVideoPlayerModal);
+    }
+    
+    // 모달 배경 클릭 시 닫기
+    const modal = document.getElementById('video-player-modal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideVideoPlayerModal();
+            }
+        });
+    }
+    
+    // 세그먼트 컨트롤 버튼 이벤트
+    const segmentBtns = document.querySelectorAll('.video-segment-btn');
+    segmentBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const videoType = btn.dataset.videoType;
+            showVideoByType(videoType);
+        });
+    });
+    
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideVideoPlayerModal();
         }
     });
 };
@@ -2240,6 +2355,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 유저 영상 목록 모달 이벤트 설정
     setupUserVideosModal();
+    
+    // 비디오 플레이어 모달 이벤트 설정
+    setupVideoPlayerModal();
     
     // 테이블 행 클릭 이벤트 설정
     setupTableRowClick();
